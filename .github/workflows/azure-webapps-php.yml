@@ -87,14 +87,14 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-    - run: |
-          unzip php-app.zip
-          rm php-app.zip
+    
     - name: Download artifact from build job
       uses: actions/download-artifact@v2
       with:
         name: php-app
-     
+    - run: |
+          unzip php-app.zip
+          rm php-app.zip
 
     - name: 'Deploy to Azure Web App'
       id: deploy-to-webapp
