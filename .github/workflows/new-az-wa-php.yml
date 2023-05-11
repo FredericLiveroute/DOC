@@ -31,7 +31,7 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
       - run: |
-             zip -r php-app.zip  
+             zip php-app.zip  
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
