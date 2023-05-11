@@ -68,12 +68,14 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-
+      - run: |
+          zip -r node-app.zip .
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: php-app
-          path: .
+          path: php-app.zip
+
 
   deploy:
     permissions:
@@ -85,15 +87,18 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
+     - name: Download artifact from build job
+       uses: actions/download-artifact@v2
+       with:
           name: php-app
+     - run: |
+          unzip php-app.zip
+          rm php-app.zip
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
+     - name: 'Deploy to Azure Web App'
+       id: deploy-to-webapp
+       uses: azure/webapps-deploy@v2
+       with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_ }}
