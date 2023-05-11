@@ -30,12 +30,13 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-
+      - run: |
+             zip -r php-app.zip  
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: php-app
-          path: .
+          path: php-app.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,6 +50,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: php-app
+      - run: |
+          unzip php-app.zip
+          rm php-app.zip
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
